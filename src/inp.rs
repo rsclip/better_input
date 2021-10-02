@@ -8,10 +8,10 @@ use crossterm::{
 
 /// Reads and returns a string input from a user
 /// 
-/// prefix      Text preceding user input
-/// suffix      Text following user input
-/// mask        Hide user input with a character
-/// allowed     Only allow these characters
+/// prefix      string  Text preceding user input
+/// suffix      string  Text following user input
+/// mask        string  Hide user input with a character
+/// allowed     string  Only allow these characters (turns string into list)
 #[pyfunction(
     prefix = "\"\"", 
     suffix = "\"\"",

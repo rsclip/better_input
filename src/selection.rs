@@ -7,6 +7,11 @@ use crossterm::{
     event::{read, Event, KeyCode}
 };
 
+/// Allow a user to choose between multiple options
+/// 
+/// options     list    a list of options to choose from
+/// prefix      string  text preceding the selection
+/// suffix      string  text following the selection
 #[pyfunction(
     prefix = "None",
     suffix = "None",
