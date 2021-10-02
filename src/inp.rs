@@ -15,22 +15,17 @@ use crossterm::{
 #[pyfunction(
     prefix = "\"\"", 
     suffix = "\"\"",
-    mask = "\"\"",
+    mask = "None",
     allowed = "\"\"",
 )]
 pub fn input<'a>(
     prefix: &'a str, 
     suffix: &'a str,
-    mask: &'a str,
+    mask: Option<&'a str>,
     allowed: &'a str,
 ) -> PyResult<String> {
     let suffix: String = suffix.to_string();
     let suffix_len: u16 = suffix.len() as u16;
-    let masking = match mask.len() {
-        0 => false,
-        1 => true,
-        _ => {return Err(pyo3::exceptions::PyException::new_err("Argument mask must be 1 or less characters"));}
-    };
     let allowed: Option<Vec<char>> = parse_allowed(allowed);
     let mut stdout = stdout();
     let mut chars = String::new();
@@ -56,11 +51,10 @@ pub fn input<'a>(
                             None => {}
                         };
                         chars.push(char);
-                        if masking {
-                            print!("{}", mask);
-                        } else {
-                            print!("{}", char);
-                        }
+                        match mask {
+                            Some(m) => print!("{}", m),
+                            None => print!("{}", char),
+                        };
                     },
                     KeyCode::Backspace => {
                         if chars.len() > 0 {
