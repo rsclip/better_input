@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyo3::types::*;
 use std::io::{stdout, Write, Stdout};
 use crossterm::{
     ExecutableCommand, QueueableCommand,
@@ -7,10 +6,23 @@ use crossterm::{
     event::{read, Event, KeyCode}
 };
 
-#[pyfunction]
-pub fn input(prefix: &PyUnicode, suffix: &PyUnicode) -> String {
+#[pyfunction(
+    prefix = "\"\"", 
+    suffix = "\"\"",
+    mask = "\"\"",
+)]
+pub fn input<'a>(
+    prefix: &'a str, 
+    suffix: &'a str,
+    mask: &'a str,
+) -> PyResult<String> {
     let suffix: String = suffix.to_string();
     let suffix_len: u16 = suffix.len() as u16;
+    let masking = match mask.len() {
+        0 => false,
+        1 => true,
+        _ => {return Err(pyo3::exceptions::PyException::new_err("Argument mask must be 1 or less characters"));}
+    };
     let mut stdout = stdout();
     let mut chars = String::new();
     let mut rem_suffix_char = false;
@@ -29,7 +41,11 @@ pub fn input(prefix: &PyUnicode, suffix: &PyUnicode) -> String {
                     KeyCode::Enter => {break;},
                     KeyCode::Char(char) => {
                         chars.push(char);
-                        print!("{}", char);
+                        if masking {
+                            print!("{}", mask);
+                        } else {
+                            print!("{}", char);
+                        }
                     },
                     KeyCode::Backspace => {
                         if chars.len() > 0 {
@@ -57,7 +73,7 @@ pub fn input(prefix: &PyUnicode, suffix: &PyUnicode) -> String {
     };
 
     print!("\n");
-    chars
+    Ok(chars)
 }
 
 fn rem_last_char(stdout: &mut Stdout) {
