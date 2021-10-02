@@ -31,6 +31,13 @@ pub fn selection<'a>(
     stdout.execute(SavePosition)?;
     stdout.execute(Hide)?;
 
+    print!("{}", build_selection_string(&options_vec, index));
+
+    match suffix {
+        Some(x) => print!("\n{}\n", x),
+        None => {}
+    };
+
     loop {
         match read()? {
             Event::Key(event) => {
