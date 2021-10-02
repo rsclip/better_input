@@ -32,14 +32,14 @@ pub fn input<'a>(
     let mut rem_suffix_char = false;
 
     print!("{}{}", prefix, suffix);
-    stdout.queue(MoveLeft(suffix_len)).unwrap();
+    stdout.queue(MoveLeft(suffix_len))?;
 
     // save pos
-    stdout.execute(SavePosition).unwrap();
+    stdout.execute(SavePosition)?;
 
     loop {
         // read() is blocking until keyboard event
-        match read().unwrap() {
+        match read()? {
             Event::Key(event) => {
                 match event.code {
                     KeyCode::Enter => {break;},
@@ -73,12 +73,12 @@ pub fn input<'a>(
         if rem_suffix_char {
             rem_suffix_char = false;
             print!(" ");
-            stdout.queue(MoveLeft(suffix_len + 1)).unwrap();
+            stdout.queue(MoveLeft(suffix_len + 1))?;
         } else {
-            stdout.queue(MoveLeft(suffix_len)).unwrap();    
+            stdout.queue(MoveLeft(suffix_len))?;    
         }    
 
-        stdout.flush().unwrap();
+        stdout.flush()?;
     };
 
     print!("\n");
