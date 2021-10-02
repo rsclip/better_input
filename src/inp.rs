@@ -3,14 +3,20 @@ use pyo3::types::*;
 use std::io::{stdout, Write, Stdout};
 use crossterm::{
     ExecutableCommand, QueueableCommand,
-    cursor::{SavePosition, RestorePosition, MoveLeft},
+    cursor::{SavePosition, MoveLeft},
     event::{read, Event, KeyCode}
 };
 
 #[pyfunction]
-pub fn input(prefix: &PyUnicode, _suffix: &PyUnicode) -> String {
+pub fn input(prefix: &PyUnicode, suffix: &PyUnicode) -> String {
+    let suffix: String = suffix.to_string();
+    let suffix_len: u16 = suffix.len() as u16;
     let mut stdout = stdout();
     let mut chars = String::new();
+    let mut rem_suffix_char = false;
+
+    print!("{}{}", prefix, suffix);
+    stdout.queue(MoveLeft(suffix_len)).unwrap();
 
     // save pos
     stdout.execute(SavePosition).unwrap();
@@ -26,14 +32,26 @@ pub fn input(prefix: &PyUnicode, _suffix: &PyUnicode) -> String {
                         print!("{}", char);
                     },
                     KeyCode::Backspace => {
-                        chars.pop();
-                        rem_last_char(&mut stdout);
+                        if chars.len() > 0 {
+                            chars.pop();
+                            rem_last_char(&mut stdout);
+                            rem_suffix_char = true;
+                        }
                     },
                     _ => {}
                 }
             },
             _ => {}
         };
+
+        print!("{}", suffix);
+        if rem_suffix_char {
+            rem_suffix_char = false;
+            print!(" ");
+            stdout.queue(MoveLeft(suffix_len + 1)).unwrap();
+        } else {
+            stdout.queue(MoveLeft(suffix_len)).unwrap();    
+        }    
 
         stdout.flush().unwrap();
     };
