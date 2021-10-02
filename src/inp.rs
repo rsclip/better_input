@@ -6,15 +6,23 @@ use crossterm::{
     event::{read, Event, KeyCode}
 };
 
+/// Reads and returns a string input from a user
+/// 
+/// prefix      Text preceding user input
+/// suffix      Text following user input
+/// mask        Hide user input with a character
+/// allowed     Only allow these characters
 #[pyfunction(
     prefix = "\"\"", 
     suffix = "\"\"",
     mask = "\"\"",
+    allowed = "\"\"",
 )]
 pub fn input<'a>(
     prefix: &'a str, 
     suffix: &'a str,
     mask: &'a str,
+    allowed: &'a str,
 ) -> PyResult<String> {
     let suffix: String = suffix.to_string();
     let suffix_len: u16 = suffix.len() as u16;
@@ -23,6 +31,7 @@ pub fn input<'a>(
         1 => true,
         _ => {return Err(pyo3::exceptions::PyException::new_err("Argument mask must be 1 or less characters"));}
     };
+    let allowed: Option<Vec<char>> = parse_allowed(allowed);
     let mut stdout = stdout();
     let mut chars = String::new();
     let mut rem_suffix_char = false;
@@ -40,6 +49,12 @@ pub fn input<'a>(
                 match event.code {
                     KeyCode::Enter => {break;},
                     KeyCode::Char(char) => {
+                        match allowed {
+                            Some(ref allowed_chars) => {
+                                if !(allowed_chars.iter().any(|x| x == &char)) {continue;}
+                            },
+                            None => {}
+                        };
                         chars.push(char);
                         if masking {
                             print!("{}", mask);
@@ -80,4 +95,13 @@ fn rem_last_char(stdout: &mut Stdout) {
     stdout.queue(MoveLeft(1u16)).unwrap();
     print!(" ");
     stdout.queue(MoveLeft(1u16)).unwrap();
+}
+
+fn parse_allowed(allowed: &str) -> Option<Vec<char>> {
+    match allowed.len() {
+        0 => None,
+        _ => {
+            Some(allowed.chars().collect())
+        }
+    }
 }
