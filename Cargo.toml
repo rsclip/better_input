@@ -1,7 +1,11 @@
 [package]
 name = "better_input"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2018"
+authors = ["Ifaz Ahmed <ifazahmed375@gmail.com>"]
+description = "Efficient high-speed improvement of Python's input systems (using Rust)"
+readme = "README.md"
+license-file = "LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
