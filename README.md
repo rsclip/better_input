@@ -15,7 +15,27 @@
 
 ## Setup
 
-todo
+### PyPi
+1. Install `better_input` from PyPi:  
+   `python -m pip install better_input`
+2. Import it into your projects  
+   `import better_input`  
+   or alternatively,  
+   `from better_input import *`
+
+### Manual
+
+- Clone this repository
+- Install the Python module `maturin` (preferably in a venv)  
+  `python -m pip install maturin`
+- Develop the project  
+  `maturin develop`
+- Import and use the module  
+  `import better_input`
+- Build the project  
+  `maturin build`
+
+Wheels are located at `taret/wheels`
 
 ## Examples
 
@@ -61,16 +81,6 @@ minutes = spinbox(
 
 print(f"Minutes: {minutes}")
 ```
-
-## Development
-
-- Clone this repository
-- Install the Python module `maturin` (preferably in a venv)  
-  `python -m pip install maturin`
-- Build the project  
-  `maturin develop`
-- Import and use the module  
-  `import better_input`
 
 ## Built with
 - [Rust](https://www.rust-lang.org/)
